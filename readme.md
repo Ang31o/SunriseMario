@@ -1,4 +1,4 @@
-# Sunrise Mario
+# Sunrise Mario 🕹️
 
 ## Prerequisites
 
