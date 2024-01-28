@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import eventService from '../../events/event-service';
-import { Events } from '../../events/events';
+import eventService from '../events/event-service';
+import { Events } from '../events/events';
 
 export default class UiScene extends Phaser.Scene {
   private scoreLabel: Phaser.GameObjects.BitmapText;

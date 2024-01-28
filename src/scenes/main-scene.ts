@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { Constants } from '../../constants';
-import ButtonContainer from '../../ui/button-container';
-import eventService from '../../events/event-service';
-import { Events } from '../../events/events';
-import { GameState } from '../../state/game-state';
+import { Constants } from '../constants';
+import ButtonContainer from '../ui/button-container';
+import eventService from '../events/event-service';
+import { Events } from '../events/events';
+import { GameState } from '../state/game-state';
 
 export default class MainScene extends Phaser.Scene {
   private title: Phaser.GameObjects.BitmapText;

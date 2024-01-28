@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import PlayerEntity from '../../entities/player-entity';
-import { GameMap } from '../../map/game-map';
-import { PlayerAnims } from '../../anims/player-anims';
-import { ItemsAnims } from '../../anims/items-anims';
-import { EnemyAnims } from '../../anims/enemy-anims';
-import { GameState } from '../../state/game-state';
+import PlayerEntity from '../entities/player-entity';
+import { GameMap } from '../map/game-map';
+import { PlayerAnims } from '../anims/player-anims';
+import { ItemsAnims } from '../anims/items-anims';
+import { EnemyAnims } from '../anims/enemy-anims';
+import { GameState } from '../state/game-state';
 
 export default class GameScene extends Phaser.Scene {
   private gameMap: GameMap;

@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import GameScene from './scenes/game/game-scene';
-import UiScene from './scenes/ui/ui-scene';
+import GameScene from './scenes/game-scene';
+import UiScene from './scenes/ui-scene';
 import { Constants } from './constants';
-import MainScene from './scenes/game/main-scene';
+import MainScene from './scenes/main-scene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

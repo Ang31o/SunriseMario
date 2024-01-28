@@ -5,7 +5,7 @@ import { FlagEntity } from '../entities/flag-entity';
 import PlayerEntity from '../entities/player-entity';
 import eventService from '../events/event-service';
 import { Events } from '../events/events';
-import GameScene from '../scenes/game/game-scene';
+import GameScene from '../scenes/game-scene';
 
 export class GameMap {
   public map!: Phaser.Tilemaps.Tilemap;
