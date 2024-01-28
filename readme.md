@@ -34,6 +34,8 @@ npm run build
 
 Production files will be placed in the `dist` folder. Then upload those files to a web server. 🎉
 
+[🎮Try the game!🎮](https://techandeez.com/sunrisemario/)
+
 ## Project Structure
 
 ```
