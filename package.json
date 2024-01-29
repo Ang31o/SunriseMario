@@ -2,6 +2,8 @@
   "name": "sunrise-mario",
   "private": true,
   "version": "0.0.0",
+  "author": "Ang31o",
+  "email": "andjelogogic@gmail.com",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
