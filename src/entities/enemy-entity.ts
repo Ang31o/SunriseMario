@@ -44,17 +44,18 @@ export default class EnemyEntity extends BaseEntity {
     );
   }
 
+  // Adding custom collider when the enemy collides with the player
   addColliderWithPlayer(): void {
     this.collider = this.scene.physics.add.collider(
       this.collidingEntity,
       this,
-      this.onPlayerJumpedOnEnemy,
+      this.onPlayerCollision,
       null,
       this
     );
   }
 
-  onPlayerJumpedOnEnemy(): void {
+  onPlayerCollision(): void {
     if (this.isDead || this.collidingEntity.isDead) return;
     if (this.collidingEntity.body.touching.down) {
       this.killedByPlayer();

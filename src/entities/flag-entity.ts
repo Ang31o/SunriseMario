@@ -13,10 +13,9 @@ export class FlagEntity extends BaseEntity {
     private overlapEntity: BaseEntity
   ) {
     super(scene, x, y);
+    this.setupBody(Phaser.Physics.Arcade.STATIC_BODY);
     this.init();
   }
-
-  setupBody(): void {}
 
   init(): void {
     this.scene.physics.world.enableBody(
@@ -33,6 +32,7 @@ export class FlagEntity extends BaseEntity {
     this.add(this.baseSprite);
   }
 
+  // Adding custom overlap when the player collides with the flag
   makeCollectable(): void {
     this.overlap = this.scene.physics.add.overlap(
       this,

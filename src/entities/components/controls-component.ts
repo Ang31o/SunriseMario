@@ -17,6 +17,7 @@ export class ControlsComponent extends MovementComponent {
     this.init();
   }
 
+  // Movement controls setup
   init(): void {
     super.init();
     this.keyA = this.scene.input.keyboard.addKey('A');
@@ -24,6 +25,7 @@ export class ControlsComponent extends MovementComponent {
     this.keySpace = this.scene.input.keyboard.addKey('Space');
   }
 
+  // Update direction on key press
   update(...args: any[]): void {
     if (this.keyA.isDown) {
       this.direction = Direction.LEFT;

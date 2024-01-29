@@ -17,12 +17,14 @@ export class BaseEntity extends Phaser.GameObjects.Container {
     this.scene.add.existing(this);
   }
 
+  // Setup physics body for entity that can be dynamic or static
   setupBody(bodyType?: number): void {
     this.scene.physics.world.enableBody(this, bodyType);
     if (bodyType === Phaser.Physics.Arcade.DYNAMIC_BODY)
       this.body.setCollideWorldBounds(true);
   }
 
+  // Set size and position of the entity's container and body
   setBodySizePosition(): void {
     this.setSize(this.baseSprite?.displayWidth, this.baseSprite?.displayHeight);
     this.body.setSize(
@@ -32,6 +34,7 @@ export class BaseEntity extends Phaser.GameObjects.Container {
     this.body.position.set(this.x, this.y);
   }
 
+  // Add components here, like 'controls-component' for the player to be able to move, or just 'movement-component' for the enemy
   addComponent(component: any): void {
     this.components.push(component);
   }
@@ -40,6 +43,7 @@ export class BaseEntity extends Phaser.GameObjects.Container {
     return this.components.find((c) => c instanceof component) as ComponentType;
   }
 
+  // Add colliders for entities like platform, water etc.
   addCollider(
     collider: Phaser.Types.Physics.Arcade.ArcadeColliderType,
     onCollide?: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback
@@ -63,6 +67,7 @@ export class BaseEntity extends Phaser.GameObjects.Container {
   playJumpAnimation(): void {}
 
   update(time: number, delta: number): void {
+    // On each update frame components are updated as well
     this.components?.forEach((component) => {
       component.update(time, delta);
     });

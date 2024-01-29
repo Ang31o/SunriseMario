@@ -18,18 +18,21 @@ export class MovementComponent extends Phaser.GameObjects.GameObject {
     this.init();
   }
 
+  // Setup movement properties
   init(): void {
     this.speed = this.config?.speed ?? Constants.DEFAULT_SPEED;
     this.jumpForce = this.config?.jumpForce ?? Constants.DEFAULT_JUMP_FORCE;
     this.direction = this.config?.direction;
   }
 
+  // Move entity in desired direction and play run animation
   moveEntity(speed: number, isFlipped: boolean): void {
     this.entity.body.setVelocityX(speed);
     this.entity.baseSprite.setFlipX(isFlipped);
     this.entity.playRunAnimation();
   }
 
+  // Jump entity and play jump animation
   jumpEntity(): void {
     if (this.entity.body.onFloor()) {
       this.entity.body.setVelocityY(this.jumpForce);
@@ -37,11 +40,13 @@ export class MovementComponent extends Phaser.GameObjects.GameObject {
     }
   }
 
+  // Stop entity and play idle animation
   idleEntity(): void {
     this.entity.body.setVelocityX(0);
     this.entity.playIdleAnimation();
   }
 
+  // Monitor direction changes and move the entity in desired way
   update(...args: any[]): void {
     if (this.direction === Direction.LEFT) {
       this.moveEntity(-this.speed, true);

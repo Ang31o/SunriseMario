@@ -29,6 +29,7 @@ export default class GameScene extends Phaser.Scene {
 
   create() {
     this.createMap();
+    this.addEventListeners();
   }
 
   createMap(): void {
@@ -53,6 +54,19 @@ export default class GameScene extends Phaser.Scene {
 
   cameraStopFollow(): void {
     this.cameras.main.stopFollow();
+  }
+
+  addEventListeners(): void {
+    this.events.once(
+      Phaser.Scenes.Events.SHUTDOWN,
+      this.removeEventListeners,
+      this
+    );
+  }
+
+  removeEventListeners(): void {
+    this.gameMap.destroy();
+    this.gameMap = null;
   }
 
   update(time: number, delta: number): void {

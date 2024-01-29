@@ -113,6 +113,11 @@ export class GameMap {
     eventService.on(Events.PLAYER_DIE, this.onPlayerDie, this);
   }
 
+  destroy(): void {
+    eventService.off(Events.ENEMY_DIE, this.onEnemyDie, this);
+    eventService.off(Events.PLAYER_DIE, this.onPlayerDie, this);
+  }
+
   update(time: number, delta: number): void {
     this.player?.update(time, delta);
     this.enemies.forEach((enemy) => enemy?.update(time, delta));

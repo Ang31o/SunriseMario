@@ -76,7 +76,6 @@ export default class ButtonContainer extends Phaser.GameObjects.Container {
   }
 
   makeInteractive(): void {
-    console.log('make interactive', this.width, this.height);
     this.setInteractive(
       new Phaser.Geom.Rectangle(0, 0, this.width, this.height),
       Phaser.Geom.Rectangle.Contains

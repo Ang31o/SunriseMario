@@ -28,6 +28,7 @@ export class CoinEntity extends BaseEntity {
     this.add(this.baseSprite);
   }
 
+  // Adding custom overlap when the player collides with the coin
   makeCollectable(): void {
     this.overlap = this.scene.physics.add.overlap(
       this,

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import eventService from '../events/event-service';
 import { Events } from '../events/events';
+import { Constants } from '../constants';
 
 export default class UiScene extends Phaser.Scene {
   private scoreLabel: Phaser.GameObjects.BitmapText;
@@ -17,7 +18,7 @@ export default class UiScene extends Phaser.Scene {
 
   addScore(): void {
     this.scoreLabel = this.add
-      .bitmapText(20, 20, 'arcade', 'Score: 0', 15)
+      .bitmapText(20, 20, Constants.FONT, 'Score: 0', 15)
       .setTintFill(0x000000)
       .setOrigin(0);
     this.score = 0;

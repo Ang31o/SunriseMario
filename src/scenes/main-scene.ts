@@ -4,6 +4,8 @@ import ButtonContainer from '../ui/button-container';
 import eventService from '../events/event-service';
 import { Events } from '../events/events';
 import { GameState } from '../state/game-state';
+import { GamePhase } from '../core/enums/game-phase.enum';
+import ControlsContainer from '../ui/controls-container';
 
 export default class MainScene extends Phaser.Scene {
   private title: Phaser.GameObjects.BitmapText;
@@ -11,6 +13,7 @@ export default class MainScene extends Phaser.Scene {
   private tileset: any;
   private playBtn: ButtonContainer;
   private confettiEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
+  private controlsInfo: ControlsContainer;
 
   constructor() {
     super('main-scene');
@@ -39,7 +42,8 @@ export default class MainScene extends Phaser.Scene {
   create() {
     GameState.init();
     this.drawIntroMap();
-    this.addWelcomeMessage();
+    this.addTitle();
+    this.addControlsInfo();
     this.addPlayButton();
     this.addEventListeners();
   }
@@ -50,7 +54,7 @@ export default class MainScene extends Phaser.Scene {
     this.map.createLayer('layer1', this.tileset, 0, 0);
   }
 
-  addWelcomeMessage(): void {
+  addTitle(): void {
     this.title = this.add
       .bitmapText(
         Constants.GAME_WIDTH / 2,
@@ -61,6 +65,10 @@ export default class MainScene extends Phaser.Scene {
       )
       .setOrigin(0.5)
       .setTintFill(0x000000);
+  }
+
+  addControlsInfo(): void {
+    this.controlsInfo = new ControlsContainer(this, 15, 150);
   }
 
   addGameOverMessage(): void {
@@ -91,9 +99,10 @@ export default class MainScene extends Phaser.Scene {
   onPlayBtnRelease(): void {
     this.confettiEmitter?.destroy();
     this.scene.sleep('main-scene');
-    this.title.text === Constants.WELCOME_MSG
+    GameState.gamePhase === GamePhase.INIT
       ? this.startGame()
       : this.restartGame();
+    GameState.updateGamePhase(GamePhase.GAME_START);
   }
 
   startGame(): void {
@@ -111,12 +120,14 @@ export default class MainScene extends Phaser.Scene {
     this.title.setText(Constants.GAME_OVER_MSG);
     this.playBtn.updateLabel(Constants.TRY_AGAIN_TITLE);
     this.playBtn.updateSize(100);
+    GameState.updateGamePhase(GamePhase.GAME_OVER);
   }
 
   gameMapComplete(): void {
     this.wakeScene();
-    GameState.mapComplete();
     this.emitConfetti();
+    GameState.mapComplete();
+    GameState.updateGamePhase(GamePhase.MAP_COMPLETE);
     this.title.setText(Constants.CONGRATS_MSG);
     this.playBtn.updateLabel(
       GameState.map === 'map1'
@@ -130,6 +141,7 @@ export default class MainScene extends Phaser.Scene {
     this.scene.sleep('game-scene');
     this.scene.sleep('ui-scene');
     this.scene.wake('main-scene');
+    this.controlsInfo.setVisible(GameState.gamePhase === GamePhase.INIT);
   }
 
   emitConfetti(): void {
@@ -157,5 +169,15 @@ export default class MainScene extends Phaser.Scene {
   addEventListeners(): void {
     eventService.on(Events.GAME_OVER, this.gameOver, this);
     eventService.on(Events.GAME_MAP_COMPLETE, this.gameMapComplete, this);
+    this.events.once(
+      Phaser.Scenes.Events.SHUTDOWN,
+      this.removeEventListeners,
+      this
+    );
+  }
+
+  removeEventListeners(): void {
+    eventService.off(Events.GAME_OVER, this.gameOver, this);
+    eventService.off(Events.GAME_MAP_COMPLETE, this.gameMapComplete, this);
   }
 }
