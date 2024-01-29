@@ -54,7 +54,7 @@ Production files will be placed in the `dist` folder. Then upload those files to
     │   ├── ui
     │   ├── constants.ts
     │   ├── main.ts
-	├── index.html
+	  ├── index.html
     ├── package.json
 ```
 
