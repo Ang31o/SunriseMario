@@ -17,4 +17,7 @@ export class Constants {
   static PLAY_AGAIN_TITLE = 'PLAY AGAIN';
   static TRY_AGAIN_TITLE = 'TRY AGAIN';
   static NEXT_MAP_TITLE = 'NEXT MAP';
+  static HIGH_SCORE_LIST = 'HIGHT SCORE LIST';
+  static SAVE_SCORE = 'SAVE SCORE';
+  static SAVE = 'SAVE';
 }

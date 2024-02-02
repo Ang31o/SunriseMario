@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
-import { Constants } from '../constants';
+import { Constants } from '../../constants';
+import RectGraphics from '../rect-graphics';
 
 export default class ControlsContainer extends Phaser.GameObjects.Container {
-  private base: Phaser.GameObjects.Graphics;
+  private base: RectGraphics;
   private infoText: any;
 
   constructor(public scene: Phaser.Scene, x: number, y: number) {
@@ -13,21 +14,19 @@ export default class ControlsContainer extends Phaser.GameObjects.Container {
   }
 
   addBase(): void {
-    this.base = this.scene.add.graphics({
-      x: 35,
-      y: 0,
-      fillStyle: { color: 0x000000, alpha: 0.6 },
-      lineStyle: { width: 4, color: 0x6087c7, alpha: 1 },
-    });
-    this.base.fillRect(0, 0, 330, 83);
-    this.base.strokeRect(0, 0, 330, 83);
+    this.base = new RectGraphics(this.scene, {
+      width: 330,
+      height: 84,
+      fillAlpha: 0.6,
+      origin: [0, 0],
+    }).setPosition(35, 0);
     this.add(this.base);
   }
 
   addInfo(): void {
     const info = `
     Controls:
-    Use W and S to move
+    Use A and D to move
     Use SPACE to jump`;
     this.infoText = this.scene.add
       .bitmapText(0, 0, Constants.FONT, info, 15)
