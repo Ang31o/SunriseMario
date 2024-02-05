@@ -18,10 +18,14 @@ export class GameState {
     return this._score;
   }
 
-  static init(): void {
+  static resetStateData(): void {
     this._mapCounter = 1;
-    this._gamePhase = GamePhase.INIT;
     this._score = 0;
+  }
+
+  static init(): void {
+    this.updateGamePhase(GamePhase.INIT);
+    this.resetStateData();
   }
 
   static mapComplete(): void {
@@ -35,5 +39,10 @@ export class GameState {
 
   static incrementScore(): void {
     this._score++;
+  }
+
+  static gameEnd(): void {
+    this.updateGamePhase(GamePhase.GAME_END);
+    this.resetStateData();
   }
 }

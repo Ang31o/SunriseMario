@@ -20,4 +20,5 @@ export class Constants {
   static HIGH_SCORE_LIST = 'HIGHT SCORE LIST';
   static SAVE_SCORE = 'SAVE SCORE';
   static SAVE = 'SAVE';
+  static YOUR_SCORE = 'YOUR SCORE: ';
 }

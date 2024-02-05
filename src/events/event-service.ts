@@ -10,7 +10,7 @@ class eventService extends Phaser.Events.EventEmitter {
       }
     }
     console.log(fullName, args[0]);
-    return super.emit(event, args);
+    return super.emit(event, args[0]);
   }
 }
 

@@ -17,12 +17,14 @@ export default class ScoreList extends Phaser.GameObjects.Container {
     public scene: MainScene,
     x: number,
     y: number,
-    private scoreList: ScoreListItemData[]
+    private scoreListData: ScoreListItemData[],
+    private scoreUpdatedData?: ScoreListItemData
   ) {
     super(scene, x, y);
     this.scene.add.existing(this);
     this.addTitle();
     this.addSlider();
+    this.highlightAddedScore();
   }
 
   addTitle(): void {
@@ -78,7 +80,7 @@ export default class ScoreList extends Phaser.GameObjects.Container {
         bottom: 5,
       },
     });
-    this.scoreList?.forEach((scoreListItem: ScoreListItemData) => {
+    this.scoreListData?.forEach((scoreListItem: ScoreListItemData) => {
       this.addSizerItem(scoreListItem);
     });
     this.sizer.layout();
@@ -91,9 +93,27 @@ export default class ScoreList extends Phaser.GameObjects.Container {
     this.sizer.add(sizerItem);
   }
 
+  highlightAddedScore(): void {
+    if (this.scoreUpdatedData) {
+      this.scrollablePanel.scrollToChild(
+        this.sizer.getByName(this.scoreUpdatedData.name)
+      );
+      (
+        this.sizer.getByName(this.scoreUpdatedData.name) as ScoreListItem
+      ).playAddedScoreAnimation();
+    }
+  }
+
   setVisible(value: boolean): this {
     super.setVisible(value);
     this.scrollablePanel.setVisible(value);
+    return this;
+  }
+
+  destroy(fromScene?: boolean): this {
+    this.sizer.destroy();
+    this.scrollablePanel.destroy();
+    super.destroy(fromScene);
     return this;
   }
 }

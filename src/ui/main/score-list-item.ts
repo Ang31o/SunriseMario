@@ -37,7 +37,17 @@ export default class ScoreListItem extends Phaser.GameObjects.Container {
 
   updateSize(): void {
     this.setSize(250, this.playerName.height);
-    console.log(this.playerName.text, this.width);
+  }
+
+  playAddedScoreAnimation(): void {
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      repeat: 2,
+      yoyo: true,
+      duration: 200,
+      delay: 500,
+    });
   }
 
   // Adding getTopLeft method so RexUI's scrollable panel scrollToChild() method would scroll to the container
@@ -49,6 +59,6 @@ export default class ScoreListItem extends Phaser.GameObjects.Container {
   // Adding getBottomLeft method so RexUI's scrollable panel scrollToChild() method would scroll to the container
   getBottomLeft(): Phaser.Math.Vector2 {
     const bounds = this.getBounds();
-    return new Phaser.Math.Vector2(bounds.left, bounds.bottom);
+    return new Phaser.Math.Vector2(bounds.left, bounds.bottom + 5);
   }
 }

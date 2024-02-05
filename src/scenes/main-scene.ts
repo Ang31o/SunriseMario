@@ -18,12 +18,10 @@ export default class MainScene extends Phaser.Scene {
   private tileset: any;
   private playBtn: ButtonContainer;
   private confettiEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
-  private controlsInfo: ControlsContainer;
   private scoreList: ScoreList;
   public rexUI: RexUIPlugin;
   private scoreListData: ScoreListItemData[];
   private saveBtn: ButtonContainer;
-  private scoreModal: ScoreModal;
 
   constructor() {
     super('main-scene');
@@ -59,11 +57,8 @@ export default class MainScene extends Phaser.Scene {
     this.addTitle();
     this.addControlsInfo();
     this.addPlayButton();
+    this.addScoreSection();
     this.addEventListeners();
-    const scoreData = await fetchScoreList();
-    this.scoreListData = scoreData.list;
-    this.addScoreList();
-    this.addSaveScoreButton();
   }
 
   drawIntroMap(): void {
@@ -86,12 +81,19 @@ export default class MainScene extends Phaser.Scene {
   }
 
   addControlsInfo(): void {
-    this.controlsInfo = new ControlsContainer(this, 15, 150);
+    const controlsInfo = new ControlsContainer(this, 15, 150);
   }
 
-  addScoreList(): void {
+  addScoreList(scoreUpdatedData?: ScoreListItemData): void {
     if (!this.scoreListData) return;
-    this.scoreList = new ScoreList(this, 683, 60, this.scoreListData);
+    this.scoreList?.destroy();
+    this.scoreList = new ScoreList(
+      this,
+      683,
+      60,
+      this.scoreListData,
+      scoreUpdatedData
+    );
   }
 
   addGameOverMessage(): void {
@@ -119,8 +121,20 @@ export default class MainScene extends Phaser.Scene {
     );
   }
 
+  async addScoreSection(scoreUpdatedData?: ScoreListItemData): Promise<void> {
+    const scoreData = await fetchScoreList();
+    this.scoreListData = scoreData.list;
+    this.addScoreList(scoreUpdatedData);
+    this.addSaveScoreButton();
+  }
+
+  onScoreUpdated(scoreUpdatedData?: ScoreListItemData): void {
+    this.gameFinish();
+    this.addScoreSection(scoreUpdatedData);
+  }
+
   addSaveScoreButton(): void {
-    if (!this.scoreListData) return;
+    if (!this.scoreListData || this.saveBtn) return;
     this.saveBtn = new ButtonContainer(
       this,
       Constants.GAME_WIDTH / 2,
@@ -138,7 +152,7 @@ export default class MainScene extends Phaser.Scene {
         label: Constants.SAVE_SCORE,
         onRelease: () => this.onSaveScoreBtnRelease(),
       }
-    ).setVisible(true);
+    ).setVisible(GameState.score > 0);
   }
 
   onPlayBtnRelease(): void {
@@ -151,7 +165,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   onSaveScoreBtnRelease(): void {
-    this.scoreModal = new ScoreModal(this);
+    const scoreModal = new ScoreModal(this);
   }
 
   startGame(): void {
@@ -165,18 +179,26 @@ export default class MainScene extends Phaser.Scene {
   }
 
   gameOver(): void {
+    GameState.updateGamePhase(GamePhase.GAME_OVER);
     this.wakeScene();
     this.title.setText(Constants.GAME_OVER_MSG);
     this.playBtn.updateLabel(Constants.TRY_AGAIN_TITLE);
     this.playBtn.updateSize(100);
-    GameState.updateGamePhase(GamePhase.GAME_OVER);
+  }
+
+  gameFinish(): void {
+    GameState.gameEnd();
+    this.wakeScene();
+    this.title.setText(Constants.PLAY_AGAIN_TITLE);
+    this.playBtn.updateLabel(Constants.PLAY_TITLE);
+    this.playBtn.updateSize(60);
   }
 
   gameMapComplete(): void {
+    GameState.updateGamePhase(GamePhase.MAP_COMPLETE);
     this.wakeScene();
     this.emitConfetti();
     GameState.mapComplete();
-    GameState.updateGamePhase(GamePhase.MAP_COMPLETE);
     this.title.setText(Constants.CONGRATS_MSG);
     this.playBtn.updateLabel(
       GameState.map === 'map1'
@@ -187,12 +209,12 @@ export default class MainScene extends Phaser.Scene {
   }
 
   wakeScene(): void {
-    this.scene.sleep('game-scene');
-    this.scene.sleep('ui-scene');
+    !this.scene.isSleeping('game-scene') && this.scene.sleep('game-scene');
+    !this.scene.isSleeping('ui-scene') && this.scene.sleep('ui-scene');
     this.scene.wake('main-scene');
-    this.controlsInfo.setVisible(GameState.gamePhase === GamePhase.INIT);
-    this.scoreList.setVisible(GameState.gamePhase === GamePhase.INIT);
-    this.saveBtn.setVisible(GameState.gamePhase !== GamePhase.INIT);
+    this.saveBtn?.setVisible(
+      GameState.gamePhase !== GamePhase.INIT && GameState.score > 0
+    );
   }
 
   emitConfetti(): void {
@@ -220,6 +242,7 @@ export default class MainScene extends Phaser.Scene {
   addEventListeners(): void {
     eventService.on(Events.GAME_OVER, this.gameOver, this);
     eventService.on(Events.GAME_MAP_COMPLETE, this.gameMapComplete, this);
+    eventService.on(Events.SCORE_UPDATED, this.onScoreUpdated, this);
     this.events.once(
       Phaser.Scenes.Events.SHUTDOWN,
       this.removeEventListeners,
@@ -230,5 +253,6 @@ export default class MainScene extends Phaser.Scene {
   removeEventListeners(): void {
     eventService.off(Events.GAME_OVER, this.gameOver, this);
     eventService.off(Events.GAME_MAP_COMPLETE, this.gameMapComplete, this);
+    eventService.off(Events.SCORE_UPDATED, this.onScoreUpdated, this);
   }
 }

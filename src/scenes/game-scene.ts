@@ -57,6 +57,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   addEventListeners(): void {
+    // Keyboard input will only work for game-scene,
+    // this way Saving Score functionality can use keyboard buttons (A, D and SPACE) tied to the game from controls-component
+    this.input.keyboard.disableGlobalCapture();
     this.events.once(
       Phaser.Scenes.Events.SHUTDOWN,
       this.removeEventListeners,

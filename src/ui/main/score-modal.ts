@@ -6,6 +6,8 @@ import { saveScore } from '../../requests/http/save-score';
 import { GameState } from '../../state/game-state';
 import PopupMessage from '../popup-message';
 import RectGraphics from '../rect-graphics';
+import eventService from '../../events/event-service';
+import { Events } from '../../events/events';
 
 export default class ScoreModal extends Phaser.GameObjects.Container {
   private base: RectGraphics;
@@ -14,11 +16,13 @@ export default class ScoreModal extends Phaser.GameObjects.Container {
   private baseHeight = 200;
   private closeBtn: ButtonContainer;
   private saveBtn: ButtonContainer;
+  private score: Phaser.GameObjects.BitmapText;
 
   constructor(public scene: Phaser.Scene) {
     super(scene, Constants.GAME_WIDTH / 2, Constants.GAME_HEIGHT / 2);
     this.scene.add.existing(this);
     this.addBase();
+    this.addScore();
     this.addInputText();
     this.addSave();
     this.addClose();
@@ -34,8 +38,23 @@ export default class ScoreModal extends Phaser.GameObjects.Container {
     this.add(this.base);
   }
 
+  addScore(): void {
+    this.score = this.scene.add
+      .bitmapText(
+        0,
+        -70,
+        Constants.FONT,
+        Constants.YOUR_SCORE + GameState.score,
+        15
+      )
+      .setLineSpacing(4)
+      .setTintFill(0xffffff)
+      .setOrigin(0.5);
+    this.add(this.score);
+  }
+
   addInputText(): void {
-    this.inputText = new InputText(this.scene, 0, -40, 100, 100, {
+    this.inputText = new InputText(this.scene, 0, -20, 100, 100, {
       type: 'text',
       fontSize: '24px',
       color: '#ffffff',
@@ -47,6 +66,7 @@ export default class ScoreModal extends Phaser.GameObjects.Container {
       paddingRight: '0px',
       placeholder: 'Enter your name',
       backgroundColor: 'transparent',
+      maxLength: 20,
     }).resize(200, 26);
     this.scene.add.existing(this.inputText);
     this.inputText.setFocus();
@@ -65,10 +85,10 @@ export default class ScoreModal extends Phaser.GameObjects.Container {
   }
 
   addSave(): void {
-    this.saveBtn = new ButtonContainer(this.scene, 0, 30, {
+    this.saveBtn = new ButtonContainer(this.scene, 0, 50, {
       background: {
         texture: 'tiles',
-        frame: 227,
+        frame: 263,
       },
       nineslice: {
         width: 90,
@@ -89,6 +109,10 @@ export default class ScoreModal extends Phaser.GameObjects.Container {
     const resp = await saveScore(this.inputText.text, GameState.score);
     if (resp.success) {
       const message = new PopupMessage(this.scene, 'Score added!');
+      eventService.emit(Events.SCORE_UPDATED, {
+        name: this.inputText.text,
+        score: GameState.score,
+      });
       this.close();
     } else {
       const message = new PopupMessage(this.scene, resp.message);

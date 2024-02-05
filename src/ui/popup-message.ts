@@ -44,5 +44,11 @@ export default class PopupMessage extends Phaser.GameObjects.Container {
       yoyo: true,
       onComplete: () => this.destroy(true),
     });
+    // Make sure the popup-message is destroyed even if the tween wasn't completed if user clicked the 'PLAY AGAIN' button
+    this.scene.events.once(
+      Phaser.Scenes.Events.SLEEP,
+      () => this.destroy(true),
+      this
+    );
   }
 }
