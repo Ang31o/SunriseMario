@@ -42,6 +42,7 @@ export default class ScoreList extends Phaser.GameObjects.Container {
         x: this.x,
         y: this.y,
         height: 290,
+        width: 268,
         scrollMode: 0,
         background: this.scene.rexUI.add.roundRectangle(
           0,

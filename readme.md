@@ -18,6 +18,8 @@ nvm use node
 
 Replace 'node' with 'latest' for `nvm-windows`.
 
+> For full experience clone and run the [SunriseMarioAPI](https://github.com/Ang31o/SunriseMarioAPI) server to record your score and see the high-score table.
+
 ## Getting Started
 
 Start development server:
@@ -34,7 +36,9 @@ npm run build
 
 Production files will be placed in the `dist` folder. Then upload those files to a web server. 🎉
 
-[🎮Try the game!🎮](https://techandeez.com/sunrisemario/)
+![Saving score](assets/showcase/gameplay-saving-score.gif)
+
+[🎮Try the game demo!🎮](https://techandeez.com/sunrisemario/)
 
 ## Project Structure
 
@@ -49,6 +53,7 @@ Production files will be placed in the `dist` folder. Then upload those files to
     │   ├── entities
     │   ├── events
     │   ├── map
+    │   ├── requests
     │   ├── scenes
     │   ├── state
     │   ├── ui
@@ -61,16 +66,17 @@ Production files will be placed in the `dist` folder. Then upload those files to
 `main.ts` is the entry point referenced by `index.html`.
 
 - **`anims`** folder stores spritesheet animations for `player`, `enemy` and `coins`.
-- **`core`** folder has `enums` and `interfaces` with game definitions like player direction and button properties interface.
+- **`core`** folder has `enums` and `interfaces` with game definitions like player direction, button properties interface and other.
 - **`entities`** folder has the `controls` and `movement` logic for player and other entities. Inside `components` folder we have all our game entities like `player`, `enemy`, `coin` and `flag` which all extend `base` entity logic.
 - **`events`** folder stores the `event-service` which logs all events in the console, and the `events` enum.
 - **`map`** folder stores the `game-map` logic which creates the map and instantiate all of it's entities.
+- **`requests`** folder currently stores the http requests for fetching and storing player's score and high-score table data.
 - **`scenes`** folder stores three scenes used in the game.
-  - `main-scene` which is the first scene player see, and also the scene that guides the player through the game (when player dies or advanced to the next level).
+  - `main-scene` which is the first scene player see, and also the scene that guides the player through the game (when player dies or advanced to the next level). On main-scene player can see the high-score table and save new score.
   - `game-scene` loads the map and initiate all animations.
   - `ui-scene` is the scene where UI elements are displayed.
 - **`state`** folder stores the `game-state` class that is used to store general game data like current map.
-- **`ui`** folder has the `button-container` class which defines visual of any button in the game with on-click methods.
+- **`ui`** folder has the UI elements like `button-container` class which defines visual of any button in the game with on-click methods, `popup-message` for popup notification messages and other UI elements.
 
 ## Static Assets
 
