@@ -36,7 +36,7 @@ npm run build
 
 Production files will be placed in the `dist` folder. Then upload those files to a web server. 🎉
 
-![Saving score](assets/showcase/gameplay-saving-score.gif)
+![Saving score](public/assets/showcase/gameplay-saving-score.gif)
 
 [🎮Try the game demo!🎮](https://techandeez.com/sunrisemario/)
 
