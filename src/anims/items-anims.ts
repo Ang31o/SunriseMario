@@ -13,4 +13,15 @@ export const ItemsAnims = (anims: Phaser.Animations.AnimationManager) => {
       repeat: -1,
     });
   }
+  if (!anims.exists('boxSlide')) {
+    anims.create({
+      key: 'boxSlide',
+      frames: anims.generateFrameNumbers('tiles', {
+        start: 36,
+        end: 39,
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
+  }
 };

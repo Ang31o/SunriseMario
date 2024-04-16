@@ -47,7 +47,7 @@ export class CoinEntity extends BaseEntity {
       ease: 'Power1',
       scaleX: 0,
       scaleY: 0,
-      duration: 200,
+      duration: 350,
       onComplete: () => this.destroy(),
     });
     this.overlap.destroy();

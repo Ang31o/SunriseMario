@@ -6,6 +6,7 @@ import eventService from '../events/event-service';
 import { Constants } from '../constants';
 
 export default class PlayerEntity extends BaseEntity {
+  private superMario: boolean;
   constructor(public scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
     this.setupBody(Phaser.Physics.Arcade.DYNAMIC_BODY);
@@ -44,6 +45,12 @@ export default class PlayerEntity extends BaseEntity {
 
   playDieAnimation(): void {
     this.baseSprite.play('die', true);
+  }
+
+  onMushroomCollect(): void {
+    this.baseSprite.setScale(2.2);
+    this.setBodySizePosition();
+    this.superMario = true;
   }
 
   die(): void {

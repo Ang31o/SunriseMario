@@ -1,4 +1,5 @@
 import { Constants } from '../constants';
+import { BoxEntity } from '../entities/box-entity';
 import { CoinEntity } from '../entities/coin-entity';
 import EnemyEntity from '../entities/enemy-entity';
 import { FlagEntity } from '../entities/flag-entity';
@@ -14,6 +15,7 @@ export class GameMap {
   private player: PlayerEntity;
   private enemies: EnemyEntity[];
   private water: Phaser.Tilemaps.TilemapLayer;
+  private boxes: BoxEntity[];
 
   constructor(private scene: GameScene, private mapKey: string) {
     this.init();
@@ -58,6 +60,7 @@ export class GameMap {
   addMapComponents(): void {
     this.addCoins();
     this.addEnemies();
+    this.addBox();
     this.addFlag();
   }
 
@@ -86,6 +89,23 @@ export class GameMap {
       enemy.addCollider(this.platform);
       enemy.addCollider(this.water, () => enemy.die());
       this.enemies.push(enemy);
+    });
+  }
+
+  addBox(): void {
+    this.boxes = [];
+    const boxObjects = this.map.getObjectLayer('box')?.objects;
+    boxObjects?.forEach((boxObject) => {
+      const amount =
+        boxObject.properties?.find((p) => p.name === 'amount')?.value || 1;
+      const box = new BoxEntity(
+        this.scene,
+        boxObject.x,
+        boxObject.y,
+        amount,
+        this.player
+      );
+      this.boxes.push(box);
     });
   }
 
