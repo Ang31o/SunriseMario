@@ -6,7 +6,8 @@ import eventService from '../events/event-service';
 import { Constants } from '../constants';
 
 export default class PlayerEntity extends BaseEntity {
-  private superMario: boolean;
+  public superMario: boolean;
+  public isImmortal: boolean;
   constructor(public scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
     this.setupBody(Phaser.Physics.Arcade.DYNAMIC_BODY);
@@ -27,7 +28,10 @@ export default class PlayerEntity extends BaseEntity {
 
   addComponents(): void {
     this.addComponent(
-      new ControlsComponent(this.scene, this, { speed: 200, jumpForce: -350 })
+      new ControlsComponent(this.scene, this, {
+        speed: 200,
+        jumpForce: Constants.PLAYER_JUMP_FORCE,
+      })
     );
   }
 
@@ -47,13 +51,58 @@ export default class PlayerEntity extends BaseEntity {
     this.baseSprite.play('die', true);
   }
 
-  onMushroomCollect(): void {
-    this.baseSprite.setScale(2.2);
-    this.setBodySizePosition();
-    this.superMario = true;
+  onCollectedMushroom(): void {
+    this.blinkPlayerAnimation();
+    this.resizePlayerAnimation(true);
+  }
+
+  removeSuperMario(): void {
+    this.blinkPlayerAnimation();
+    this.resizePlayerAnimation(false);
+  }
+
+  blinkPlayerAnimation(): void {
+    this.isImmortal = true;
+    this.scene.tweens.addCounter({
+      from: 0,
+      to: 100,
+      duration: 70,
+      repeat: 4,
+      yoyo: true,
+      onYoyo: () => {
+        this.baseSprite.clearTint();
+      },
+      onRepeat: () => {
+        this.baseSprite.setTintFill(0xffffff);
+      },
+      onComplete: () => {
+        this.isImmortal = false;
+      },
+    });
+  }
+
+  resizePlayerAnimation(isSuperMario: boolean): void {
+    this.scene.tweens.add({
+      targets: this.baseSprite,
+      scaleX: isSuperMario ? 2.4 : 2,
+      scaleY: isSuperMario ? 2.4 : 2,
+      duration: 500,
+      onComplete: () => {
+        this.setBodySizePosition();
+        this.movementComponent.jumpForce = isSuperMario
+          ? Constants.PLAYER_SUPER_JUMP_FORCE
+          : Constants.PLAYER_JUMP_FORCE;
+        this.superMario = isSuperMario;
+      },
+    });
   }
 
   die(): void {
+    if (this.isImmortal) return;
+    if (this.superMario) {
+      this.removeSuperMario();
+      return;
+    }
     this.isDead = true;
     this.movementComponent.jumpEntity();
     this.playDieAnimation();
@@ -65,8 +114,16 @@ export default class PlayerEntity extends BaseEntity {
     super.die();
   }
 
+  onPlayerKilledAbs(): void {
+    this.isImmortal = false;
+    this.superMario = false;
+    this.die();
+  }
+
   addEventListeners(): void {
     eventService.on(Events.PLAYER_KILLED, this.die, this);
+    eventService.on(Events.PLAYER_KILLED_ABS, this.onPlayerKilledAbs, this);
+    eventService.on(Events.COLLECTED_MUSHROOM, this.onCollectedMushroom, this);
   }
 
   destroy(fromScene?: boolean): void {

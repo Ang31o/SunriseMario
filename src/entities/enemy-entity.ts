@@ -4,6 +4,7 @@ import { BaseEntity } from './base-entity';
 import { Direction } from '../core/enums/direction.enum';
 import eventService from '../events/event-service';
 import { Events } from '../events/events';
+import PlayerEntity from './player-entity';
 
 export default class EnemyEntity extends BaseEntity {
   private collider: Phaser.Physics.Arcade.Collider;
@@ -12,7 +13,7 @@ export default class EnemyEntity extends BaseEntity {
     public scene: Phaser.Scene,
     x: number,
     y: number,
-    private collidingEntity: BaseEntity
+    private collidingEntity: PlayerEntity
   ) {
     super(scene, x, y);
     this.setupBody(Phaser.Physics.Arcade.DYNAMIC_BODY);
@@ -24,6 +25,7 @@ export default class EnemyEntity extends BaseEntity {
     this.setBodySizePosition();
     this.addComponents();
     this.addColliderWithPlayer();
+    this.addEventListeners();
   }
 
   addSprite(): void {
@@ -68,13 +70,16 @@ export default class EnemyEntity extends BaseEntity {
   }
 
   killPlayer(): void {
-    this.scene.physics.world.removeCollider(this.collider);
     eventService.emit(Events.PLAYER_KILLED);
   }
 
   killedByPlayer(): void {
     eventService.emit(Events.INCREMENT_SCORE);
     this.die();
+  }
+
+  onPlayerDie(): void {
+    this.scene.physics.world.removeCollider(this.collider);
   }
 
   die(): void {
@@ -100,5 +105,14 @@ export default class EnemyEntity extends BaseEntity {
       this.movementComponent.direction = Direction.RIGHT;
     }
     super.update(time, delta);
+  }
+
+  addEventListeners(): void {
+    eventService.on(Events.PLAYER_DIE, this.onPlayerDie, this);
+  }
+
+  destroy(fromScene?: boolean): void {
+    eventService.off(Events.PLAYER_DIE, this.onPlayerDie, this);
+    super.destroy(fromScene);
   }
 }

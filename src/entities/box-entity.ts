@@ -4,13 +4,13 @@ import { BaseEntity } from './base-entity';
 import { CoinEntity } from './coin-entity';
 
 export class BoxEntity extends BaseEntity {
-  private coinsCollected: number;
+  private collectedCount: number;
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    private amount: number,
+    private content: { type: string; amount: number },
     private overlapEntity: BaseEntity
   ) {
     super(scene, x, y);
@@ -19,7 +19,7 @@ export class BoxEntity extends BaseEntity {
   }
 
   init(): void {
-    this.coinsCollected = 0;
+    this.collectedCount = 0;
     this.addSprite();
     this.setBodySizePosition();
     this.body.setCollidesWith(1);
@@ -43,6 +43,14 @@ export class BoxEntity extends BaseEntity {
     );
   }
 
+  showContent(): void {
+    if (this.content.type === 'coins') {
+      this.addCoinSprite();
+    } else if (this.content.type === 'mushrooms') {
+      this.addMushroom();
+    }
+  }
+
   addCoinSprite(): void {
     const coinSprite = new CoinEntity(
       this.scene,
@@ -51,21 +59,29 @@ export class BoxEntity extends BaseEntity {
       this.overlapEntity
     );
     coinSprite.onCollect();
-    this.coinsCollected++;
-    if (this.coinsCollected === this.amount) {
+    this.collectedCount++;
+    if (this.collectedCount === this.content.amount) {
+      this.closeBox();
+    }
+  }
+
+  addMushroom(): void {
+    eventService.emit(Events.ADD_MUSHROOM, { x: this.x, y: this.y });
+    this.collectedCount++;
+    if (this.collectedCount === this.content.amount) {
       this.closeBox();
     }
   }
 
   onPlayerCollision(): void {
     if (!this.overlapEntity.body.touching.up) return;
-    if (this.coinsCollected < this.amount) {
+    if (this.collectedCount < this.content.amount) {
       this.scene.tweens.add({
         targets: this,
         y: this.y - 7,
         yoyo: true,
         duration: 150,
-        onYoyo: () => this.addCoinSprite(),
+        onYoyo: () => this.showContent(),
       });
     }
   }

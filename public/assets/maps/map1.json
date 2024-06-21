@@ -185,7 +185,7 @@
                  "name":"",
                  "properties":[
                         {
-                         "name":"amount",
+                         "name":"coins",
                          "type":"int",
                          "value":3
                         }],
@@ -203,7 +203,7 @@
                  "name":"",
                  "properties":[
                         {
-                         "name":"amount",
+                         "name":"coins",
                          "type":"int",
                          "value":4
                         }],
@@ -211,8 +211,26 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":1040,
-                 "y":369
+                 "x":1041,
+                 "y":335
+                }, 
+                {
+                 "gid":1,
+                 "height":16,
+                 "id":16,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"mushrooms",
+                         "type":"int",
+                         "value":1
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":209,
+                 "y":304
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -235,7 +253,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":16,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

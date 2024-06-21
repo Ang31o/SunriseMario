@@ -33,8 +33,8 @@ export class MovementComponent extends Phaser.GameObjects.GameObject {
   }
 
   // Jump entity and play jump animation
-  jumpEntity(): void {
-    if (this.entity.body.onFloor()) {
+  jumpEntity(floorOverride?: boolean): void {
+    if (this.entity.body.onFloor() || floorOverride) {
       this.entity.body.setVelocityY(this.jumpForce);
       this.entity.playJumpAnimation();
     }

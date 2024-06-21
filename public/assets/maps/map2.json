@@ -169,12 +169,18 @@
                  "height":16,
                  "id":14,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"mushrooms",
+                         "type":"int",
+                         "value":1
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":16,
                  "x":224,
-                 "y":353
+                 "y":320
                 }],
          "opacity":1,
          "type":"objectgroup",

@@ -9,7 +9,11 @@ class eventService extends Phaser.Events.EventEmitter {
         fullName = i;
       }
     }
-    console.log(fullName, args[0]);
+    console.log(
+      `%c${fullName.toString()}`,
+      `background: #007acc; color: #FFFFFF; padding: 5px`,
+      args[0]
+    );
     return super.emit(event, args[0]);
   }
 }
