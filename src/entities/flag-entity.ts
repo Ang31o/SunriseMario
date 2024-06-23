@@ -29,6 +29,7 @@ export class FlagEntity extends BaseEntity {
 
   addSprite(): void {
     this.baseSprite = this.scene.add.sprite(0, 0, 'tiles', 962).setOrigin(0, 1);
+    this.baseSprite.play('flagWave');
     this.add(this.baseSprite);
   }
 

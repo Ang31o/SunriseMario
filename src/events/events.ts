@@ -9,4 +9,5 @@ export enum Events {
   SCORE_UPDATED = 'score-updated',
   ADD_MUSHROOM = 'add-mushroom',
   COLLECTED_MUSHROOM = 'collected-mushroom',
+  COLLECTED_POISON = 'collected-poison',
 }

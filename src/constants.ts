@@ -7,6 +7,7 @@ export class Constants {
   static MAP_LAYER_FLAG = 'flag';
   static DEFAULT_SPEED = 100;
   static DEFAULT_JUMP_FORCE = -250;
+  static PLAYER_SPEED = 200;
   static PLAYER_JUMP_FORCE = -350;
   static PLAYER_SUPER_JUMP_FORCE = -400;
   static GAME_OVER_TIMEOUT = 1500;

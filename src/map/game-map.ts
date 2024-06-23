@@ -1,10 +1,12 @@
 import { Constants } from '../constants';
 import { BoxEntity } from '../entities/box-entity';
+import CloudEntity from '../entities/cloud-entity';
 import { CoinEntity } from '../entities/coin-entity';
 import EnemyEntity from '../entities/enemy-entity';
 import { FlagEntity } from '../entities/flag-entity';
 import { MushroomEntity } from '../entities/mushroom-entity';
 import PlayerEntity from '../entities/player-entity';
+import { PoisonEntity } from '../entities/poison-entity';
 import eventService from '../events/event-service';
 import { Events } from '../events/events';
 import GameScene from '../scenes/game-scene';
@@ -18,6 +20,9 @@ export class GameMap {
   private water: Phaser.Tilemaps.TilemapLayer;
   private boxes: BoxEntity[];
   private mushroom: MushroomEntity;
+  private animatedTiles: any;
+  private poisons: PoisonEntity[];
+  private clouds: CloudEntity[];
 
   constructor(private scene: GameScene, private mapKey: string) {
     this.init();
@@ -25,6 +30,7 @@ export class GameMap {
 
   init(): void {
     this.createMap();
+    this.getAnimatedTiles();
     this.addPlatform();
     this.addWater();
     this.addPlayer();
@@ -36,6 +42,26 @@ export class GameMap {
     this.map = this.scene.make.tilemap({ key: this.mapKey });
     this.tileset = this.map.addTilesetImage('map-tileset', 'tiles');
     this.map.createLayer('background', this.tileset, 0, 0);
+  }
+
+  getAnimatedTiles(): void {
+    this.animatedTiles = [];
+    for (const tileId in this.tileset.tileData) {
+      this.map.layers.forEach((layer) => {
+        layer.data.forEach((tileRow) => {
+          tileRow.forEach((tile) => {
+            if (tile.index - this.tileset.firstgid === parseInt(tileId)) {
+              this.animatedTiles.push({
+                tile,
+                tileAnimationData: this.tileset.tileData[tileId].animation,
+                firstgid: this.tileset.firstgid,
+                elapsedTime: 0,
+              });
+            }
+          });
+        });
+      });
+    }
   }
 
   addPlatform(): void {
@@ -50,7 +76,9 @@ export class GameMap {
 
   addPlayer() {
     this.player = new PlayerEntity(this.scene, 25, 100);
+    // this.player = new PlayerEntity(this.scene, 1980, 100);
     this.player.addCollider(this.platform);
+
     this.player.addCollider(this.water, () =>
       eventService.emit(Events.PLAYER_KILLED_ABS)
     );
@@ -65,6 +93,8 @@ export class GameMap {
     this.addCoins();
     this.addEnemies();
     this.addBox();
+    this.addPoison();
+    this.addClouds();
     this.addFlag();
   }
 
@@ -115,6 +145,39 @@ export class GameMap {
     });
   }
 
+  addPoison(): void {
+    this.poisons = [];
+    const poisonObjects = this.map.getObjectLayer('poison')?.objects;
+    poisonObjects?.forEach((poisonObject) => {
+      const poison = new PoisonEntity(
+        this.scene,
+        poisonObject.x,
+        poisonObject.y - 16,
+        this.player
+      );
+      this.poisons.push(poison);
+    });
+  }
+
+  addClouds(): void {
+    this.clouds = [];
+    const cloudObjects = this.map.getObjectLayer('clouds')?.objects;
+    cloudObjects?.forEach((cloudObject) => {
+      const borders = {
+        left: cloudObject.properties[0].value,
+        right: cloudObject.properties[1].value,
+      };
+      const cloud = new CloudEntity(
+        this.scene,
+        cloudObject.x,
+        cloudObject.y,
+        borders,
+        this.player
+      );
+      this.clouds.push(cloud);
+    });
+  }
+
   onAddMushroom(position: { x: number; y: number }): void {
     this.mushroom = new MushroomEntity(
       this.scene,
@@ -162,12 +225,30 @@ export class GameMap {
     eventService.off(Events.COLLECTED_MUSHROOM, this.onCollectedMushroom, this);
   }
 
+  animateTiles(delta: number): void {
+    this.animatedTiles.forEach((tile) => {
+      if (!tile.tileAnimationData) return;
+      const animationDuration =
+        tile.tileAnimationData[0].duration * tile.tileAnimationData.length;
+      tile.elapsedTime += delta;
+      tile.elapsedTime %= animationDuration;
+      const animationFrameIndex = Math.floor(
+        tile.elapsedTime / tile.tileAnimationData[0].duration
+      );
+      tile.tile.index =
+        tile.tileAnimationData[animationFrameIndex].tileid + tile.firstgid;
+    });
+  }
+
   update(time: number, delta: number): void {
+    this.animateTiles(delta);
     this.player?.update(time, delta);
     if (this.enemies.length > 0)
       this.enemies.forEach((enemy) => enemy?.update(time, delta));
     if (this.boxes.length > 0)
       this.boxes.forEach((box) => box?.update(time, delta));
+    if (this.clouds.length > 0)
+      this.clouds.forEach((cloud) => cloud?.update(time, delta));
     if (this.mushroom) this.mushroom.update(time, delta);
   }
 }

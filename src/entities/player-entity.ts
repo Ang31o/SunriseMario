@@ -8,6 +8,7 @@ import { Constants } from '../constants';
 export default class PlayerEntity extends BaseEntity {
   public superMario: boolean;
   public isImmortal: boolean;
+  public isPoisoned: boolean;
   constructor(public scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
     this.setupBody(Phaser.Physics.Arcade.DYNAMIC_BODY);
@@ -29,7 +30,7 @@ export default class PlayerEntity extends BaseEntity {
   addComponents(): void {
     this.addComponent(
       new ControlsComponent(this.scene, this, {
-        speed: 200,
+        speed: Constants.PLAYER_SPEED,
         jumpForce: Constants.PLAYER_JUMP_FORCE,
       })
     );
@@ -56,13 +57,23 @@ export default class PlayerEntity extends BaseEntity {
     this.resizePlayerAnimation(true);
   }
 
+  onCollectedPoison(): void {
+    if (this.isPoisoned) return;
+    this.blinkPlayerAnimation(() => {
+      this.baseSprite.setTint(0x00ff00);
+    });
+    this.movementComponent.speed = Constants.DEFAULT_SPEED;
+    this.isPoisoned = true;
+  }
+
   removeSuperMario(): void {
     this.blinkPlayerAnimation();
     this.resizePlayerAnimation(false);
   }
 
-  blinkPlayerAnimation(): void {
+  blinkPlayerAnimation(completeCallback?: any): void {
     this.isImmortal = true;
+    this.baseSprite.clearTint();
     this.scene.tweens.addCounter({
       from: 0,
       to: 100,
@@ -77,6 +88,7 @@ export default class PlayerEntity extends BaseEntity {
       },
       onComplete: () => {
         this.isImmortal = false;
+        if (completeCallback) completeCallback();
       },
     });
   }
@@ -124,10 +136,14 @@ export default class PlayerEntity extends BaseEntity {
     eventService.on(Events.PLAYER_KILLED, this.die, this);
     eventService.on(Events.PLAYER_KILLED_ABS, this.onPlayerKilledAbs, this);
     eventService.on(Events.COLLECTED_MUSHROOM, this.onCollectedMushroom, this);
+    eventService.on(Events.COLLECTED_POISON, this.onCollectedPoison, this);
   }
 
   destroy(fromScene?: boolean): void {
     eventService.off(Events.PLAYER_KILLED, this.die, this);
+    eventService.off(Events.PLAYER_KILLED_ABS, this.onPlayerKilledAbs, this);
+    eventService.off(Events.COLLECTED_MUSHROOM, this.onCollectedMushroom, this);
+    eventService.off(Events.COLLECTED_POISON, this.onCollectedPoison, this);
     super.destroy(fromScene);
   }
 }

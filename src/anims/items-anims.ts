@@ -24,4 +24,26 @@ export const ItemsAnims = (anims: Phaser.Animations.AnimationManager) => {
       repeat: -1,
     });
   }
+  if (!anims.exists('flagWave')) {
+    anims.create({
+      key: 'flagWave',
+      frames: anims.generateFrameNumbers('tiles', {
+        start: 962,
+        end: 964,
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
+  }
+  if (!anims.exists('poisonWave')) {
+    anims.create({
+      key: 'poisonWave',
+      frames: anims.generateFrameNumbers('tiles', {
+        start: 769,
+        end: 775,
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
+  }
 };
